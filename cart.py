@@ -4,7 +4,8 @@ import multiprocessing
 from stable_baselines3 import PPO
 from stable_baselines3.common.vec_env import SubprocVecEnv
 
-timesteps = 1_000_000
+timesteps = 5_000_000
+
 
 # multiprocessing
 def make_env(rank, seed=0):
@@ -22,11 +23,9 @@ def start():
     env = SubprocVecEnv([make_env(i) for i in range(nproc)])
 
     # cnn policy because it's vision!
-    model = PPO("CnnPolicy", env, verbose=1)
+    model = PPO("CnnPolicy", env, verbose=1, tensorboard_log="./log/")
     model.learn(total_timesteps=timesteps, progress_bar=True)
     model.save("out/selfdrivingcar")
-    vec_env = model.get_env()
-    obs = vec_env.reset()
 
 
 if __name__ == "__main__":
